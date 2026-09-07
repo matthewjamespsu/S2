@@ -575,10 +575,14 @@
 
   function lowerFirst(s) { return s.charAt(0).toLowerCase() + s.slice(1); }
 
+  var SCRIPT_TAB_LABELS = { self: 'Script for you', partner: 'Script to send your partner' };
+
   function renderScript() {
     var arch = ARCHETYPES[state.resultArch];
     var template = arch.script[activeScriptTab];
     scriptTextEl.textContent = template.replace('{{task}}', lowerFirst(currentTaskForScript));
+    var label = document.getElementById('scriptActiveLabel');
+    if (label) label.textContent = SCRIPT_TAB_LABELS[activeScriptTab];
   }
 
   function unlockLedger(archKey) {

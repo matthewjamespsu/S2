@@ -1,0 +1,536 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<title>The Full Household Ledger System</title>
+<meta name="description" content="The complete 150+ task inventory, 3 script variations per archetype, a 30-day rebalancing plan, and a partner-facing translation guide.">
+<meta name="robots" content="noindex">
+
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,400;0,9..144,500;0,9..144,600;0,9..144,700;1,9..144,500&family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+
+<link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>📒</text></svg>">
+<link rel="stylesheet" href="../styles.css">
+</head>
+<body>
+
+<!-- ============ NAV ============ -->
+<header class="nav" id="nav">
+  <div class="nav-inner">
+    <a href="../index.html" class="wordmark">The Household Ledger</a>
+    <span class="nav-cta" style="cursor:default;">Full System</span>
+  </div>
+</header>
+
+<main id="top">
+
+  <!-- ============ HERO ============ -->
+  <section class="hero">
+    <div class="hero-bg" aria-hidden="true"></div>
+    <div class="container hero-inner">
+      <p class="eyebrow">The Full Household Ledger System</p>
+      <h1 class="hero-title">
+        Every task.<br>
+        <span class="hl">Every script. A real 30-day plan.</span>
+      </h1>
+      <p class="hero-sub">
+        This is the complete version of the Ledger you started for free — 150+ tasks,
+        3 conversation scripts per archetype built for how your specific partner responds,
+        a 30-day rebalancing plan, and a guide written for your partner to read themselves.
+      </p>
+    </div>
+  </section>
+
+  <!-- ============ PICKER ============ -->
+  <section class="section no-print">
+    <div class="container">
+      <h2 class="section-title">Which archetype are you?</h2>
+      <p class="section-sub">Select the result from your free quiz to unlock your full content.</p>
+
+      <div class="picker-grid" id="pickerGrid">
+        <button type="button" class="arch-card picker-btn" data-arch="manager" style="--accent:#C4562D">
+          <span class="arch-emoji">🗂️</span>
+          <h3>The Manager</h3>
+          <p class="arch-tag">High ownership · High visibility</p>
+        </button>
+        <button type="button" class="arch-card picker-btn" data-arch="ghost" style="--accent:#5B6E8C">
+          <span class="arch-emoji">👻</span>
+          <h3>The Ghost</h3>
+          <p class="arch-tag">High ownership · Low visibility</p>
+        </button>
+        <button type="button" class="arch-card picker-btn" data-arch="martyr" style="--accent:#8A6BAF">
+          <span class="arch-emoji">🎯</span>
+          <h3>The Martyr</h3>
+          <p class="arch-tag">Won't release control</p>
+        </button>
+        <button type="button" class="arch-card picker-btn" data-arch="default" style="--accent:#3E8E7E">
+          <span class="arch-emoji">📥</span>
+          <h3>The Default</h3>
+          <p class="arch-tag">Owner of everything unclaimed</p>
+        </button>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============ FULL CONTENT (populated by JS) ============ -->
+  <section class="section ledger" id="fullContent" hidden>
+    <div class="container">
+      <div id="ledgerPrintArea">
+
+        <div class="ledger-header">
+          <span class="eyebrow" id="fullEyebrow">Your Full Ledger</span>
+          <h2 class="section-title" id="fullTitle"></h2>
+          <p class="ledger-cost" id="fullDesc"></p>
+        </div>
+
+        <div class="board" id="board">
+          <div class="board-col" data-col="keep">
+            <h3>Keep</h3>
+            <div class="board-list" id="colKeep"></div>
+          </div>
+          <div class="board-col" data-col="delegate">
+            <h3>Delegate</h3>
+            <div class="board-list" id="colDelegate"></div>
+          </div>
+          <div class="board-col" data-col="letGo">
+            <h3>Let Go</h3>
+            <div class="board-list" id="colLetGo"></div>
+          </div>
+        </div>
+        <p class="board-hint no-print">Use the dropdown on any task to move it — edit freely, this is yours now.</p>
+
+        <div class="script-block">
+          <h3 class="script-heading">Your conversation script</h3>
+          <p class="section-sub" style="margin-bottom:22px;">Pick the one that matches how your partner tends to respond.</p>
+          <div class="script-tabs" role="tablist">
+            <button type="button" class="script-tab active" data-tab="defensive" role="tab" aria-selected="true">Defensive partner</button>
+            <button type="button" class="script-tab" data-tab="disengaged" role="tab" aria-selected="false">Disengaged partner</button>
+            <button type="button" class="script-tab" data-tab="forgetful" role="tab" aria-selected="false">Willing but forgetful</button>
+          </div>
+          <p class="script-active-label" id="scriptActiveLabel"></p>
+          <p class="script-text" id="scriptText"></p>
+          <button type="button" class="btn btn-outline btn-sm" id="copyScriptBtn">Copy Script</button>
+        </div>
+
+        <h3 class="section-title" style="margin-bottom:32px;">Your 30-day rebalancing plan</h3>
+        <div class="plan-grid">
+          <div class="plan-week">
+            <span class="plan-week-num">Week 1</span>
+            <h4>Name It</h4>
+            <p id="planWeek1"></p>
+          </div>
+          <div class="plan-week">
+            <span class="plan-week-num">Week 2</span>
+            <h4>Hand Off One Thing</h4>
+            <p>Pick a single task from your Delegate list and hand it off completely, using the script above. One task, done right, matters more than five half-handed-off ones.</p>
+          </div>
+          <div class="plan-week">
+            <span class="plan-week-num">Week 3</span>
+            <h4>Make It Visible</h4>
+            <p>Put this Ledger somewhere you both can see it — shared doc, whiteboard, whatever works. The goal isn't more talking, it's relying less on memory.</p>
+          </div>
+          <div class="plan-week">
+            <span class="plan-week-num">Week 4</span>
+            <h4>Review and Expand</h4>
+            <p>Revisit what worked and what slipped. Hand off one more task. Rebalancing isn't a single conversation — it's a habit you repeat.</p>
+          </div>
+        </div>
+
+        <h3 class="section-title" style="margin-bottom:32px;">A guide for your partner</h3>
+        <div class="guide-card">
+          <p id="guideText"></p>
+          <button type="button" class="btn btn-outline btn-sm no-print" id="copyGuideBtn">Copy Guide</button>
+        </div>
+
+        <div class="ledger-actions no-print">
+          <button type="button" class="btn btn-outline" id="downloadPdfBtn">Download as PDF</button>
+        </div>
+      </div>
+    </div>
+  </section>
+
+</main>
+
+<!-- ============ FOOTER ============ -->
+<footer class="footer">
+  <div class="container footer-inner">
+    <span class="wordmark wordmark-footer">The Household Ledger</span>
+    <p>© 2026 The Household Ledger.</p>
+  </div>
+</footer>
+
+<script>
+(function () {
+  'use strict';
+
+  var FULL = {
+    manager: {
+      name: 'The Manager',
+      emoji: '🗂️',
+      desc: "You don't just do the work — you assign it, track it, and follow up when it doesn't happen. Here's the complete breakdown, not just the starter version.",
+      tasks: {
+        keep: [
+          "Tracking medical & school appointments",
+          "Owning the shared family calendar",
+          "Big-picture school year planning (deadlines, calendars)",
+          "The family's emergency contact & medical info list",
+          "Annual insurance & benefits enrollment decisions",
+          "Tracking immunization records and well-visit schedules",
+          "Coordinating multi-kid schedule conflicts",
+          "Budget check-ins and bill due-date tracking",
+          "Planning family vacations' logistics skeleton",
+          "Keeping the family's shared docs, passwords, and routines current"
+        ],
+        delegate: [
+          "Assigning and tracking weekly chores",
+          "Planning meals for the week",
+          "Coordinating gifts for birthdays & holidays",
+          "Scheduling recurring haircuts and checkups",
+          "Managing the family group chat and logistics texts",
+          "Booking childcare or babysitters",
+          "Coordinating carpools and activity pickups",
+          "Renewing school forms and sports registrations",
+          "Ordering household supplies before they run out",
+          "Scheduling home maintenance (HVAC, gutters, pest control)",
+          "Managing the family's shared to-do app or whiteboard",
+          "Planning weekend activities and outings",
+          "Coordinating extended family visits",
+          "Tracking library due dates and returns",
+          "Managing kids' clothing and shoe size changes",
+          "Scheduling dentist and orthodontist appointments",
+          "Coordinating school volunteer sign-ups",
+          "Planning and RSVPing to birthday parties and events",
+          "Managing streaming and subscription renewals",
+          "Tracking and renewing passports and IDs before trips"
+        ],
+        letGo: [
+          "Double-checking delegated tasks got done",
+          "Mentally \"managing\" your partner's to-do list",
+          "Sending reminder texts for things already assigned",
+          "Re-explaining the plan every time it's asked for",
+          "Feeling responsible when a delegated task slips",
+          "Holding the master plan in your head instead of a shared doc",
+          "Being the only one who knows the full schedule",
+          "Answering \"what's the plan?\" instead of pointing to where it's written",
+          "Taking back a delegated task the first time it's done differently",
+          "Assuming you have to be the one who notices what's next"
+        ]
+      },
+      scripts: {
+        defensive: "I want to talk about {{task}} — and I want to be clear this isn't about blaming you, it's about the system we're both stuck in. Right now I'm the one planning, assigning, and following up on almost everything, and that's exhausting no matter how much you're already helping. I'm not saying you're not trying. I'm saying I need to stop being the project manager for our house, starting with {{task}} — I'll hand it over fully, and I need you to own it without me tracking it.",
+        disengaged: "I need one specific thing from you: full ownership of {{task}}, starting this week. Not just doing it when I remind you — noticing it needs to happen and handling it yourself, every time, without me bringing it up. If it's not done, that's information for us to fix, not something I'll quietly take back.",
+        forgetful: "I know you want to help more, and I don't think this is about effort — I think we just don't have a system that doesn't rely on my memory. So let's set up something visible for {{task}} — a shared list or calendar reminder that's not coming from me. If it slips, we fix the system, not just try harder."
+      },
+      planWeek1: "Watch for how often you're not just doing tasks, but tracking and following up on ones you've already assigned — that's the hidden half of your load.",
+      guide: "Your partner just found out they've been playing a role called \"The Manager\" in your household — meaning they're not just doing tasks, they're planning them, assigning them, and following up to make sure they happen. That last part is the exhausting bit: it's a full second job of tracking, even on days they're not doing the physical task themselves. This isn't about you not helping — it's likely you are. It's that being handed a fully-formed plan, over and over, is different from actually owning a piece of the household independently. What would help most isn't doing more when asked — it's picking something specific and running it entirely on your own: noticing it needs to happen, remembering it, doing it, without being reminded. That's the shift that actually lightens their load."
+    },
+    ghost: {
+      name: 'The Ghost',
+      emoji: '👻',
+      desc: "You carry more than anyone realizes — including your partner. Here's the complete breakdown, not just the starter version.",
+      tasks: {
+        keep: [
+          "The one thing only you currently know how to do",
+          "Managing passwords & logins for family accounts",
+          "Tracking family health history and insurance details",
+          "Knowing each kid's actual sizes, preferences, and quirks",
+          "Tracking known allergies and medical needs across caregivers",
+          "Maintaining the mental map of who needs what, when",
+          "Managing financial account access and logins",
+          "Keeping track of commitments and RSVPs",
+          "Holding the family's informal social calendar"
+        ],
+        delegate: [
+          "Daycare & school forms / permission slips",
+          "Restocking household supplies",
+          "Scheduling kids' appointments",
+          "Managing family calendar invites",
+          "Ordering replacement clothes and shoes as kids grow",
+          "Handling school communication emails",
+          "Renewing prescriptions",
+          "Packing seasonal clothing swaps",
+          "Managing kids' library cards and school logins",
+          "Tracking school project due dates",
+          "Coordinating with teachers on concerns",
+          "Managing kids' screen time and app permissions",
+          "Handling insurance claims and reimbursements",
+          "Scheduling vaccinations and required physicals",
+          "Managing the family photo archive and backups",
+          "Tracking warranties and return windows on purchases",
+          "Coordinating pet care (vet, grooming, boarding)",
+          "Managing gift wish lists for relatives",
+          "Handling change-of-address and mail forwarding logistics",
+          "Tracking which kid needs what for which activity"
+        ],
+        letGo: [
+          "Quietly doing tasks without mentioning them",
+          "Covering your partner's share to avoid a conversation",
+          "Absorbing last-minute changes without flagging them",
+          "Fixing small household issues silently",
+          "Pre-solving problems before they become visible",
+          "Keeping a mental list nobody else knows exists",
+          "Doing the invisible research alone (schools, doctors, activities)",
+          "Not mentioning what a task actually took to get done",
+          "Letting your partner believe things \"just happen\"",
+          "Absorbing the emotional labor of smoothing over family friction"
+        ]
+      },
+      scripts: {
+        defensive: "I want to show you something, not accuse you of anything: here's everything I've been quietly handling, including {{task}}. I know you didn't ask me to hide it — I did that on my own. But it's made my load invisible, and I need that to change. Starting now, I'm going to say things out loud instead of just absorbing them, and I need you to actually take them when I do.",
+        disengaged: "There's a specific task I've been doing without ever mentioning it: {{task}}. I need it to be fully yours starting now — I'll tell you once what it involves, and then I need you to take it from here without me following up.",
+        forgetful: "I don't think you realize how much I've been quietly carrying, including {{task}} — and that's on me for not saying anything. Let's make it visible with a shared list so it's not just in my head anymore. I'll add things as I notice them, and I need you to check it regularly, not wait for me to remind you."
+      },
+      planWeek1: "Watch for tasks you do so quietly your partner would be surprised to learn they exist — write those down especially.",
+      guide: "Your partner just found out they've been playing a role called \"The Ghost\" in your household — meaning a lot of what keeps your home running happens so quietly you may not even know it's happening. It's not that they don't trust you with it; it's that flagging every small thing has started to feel like more effort than just doing it themselves. The cost is that their workload is invisible — to you, and often to them too, until it catches up with them. What would help most is treating it as fact that there's more happening than you can see, and actively asking what that is, rather than waiting for it to be pointed out. When they do tell you about something, the best response is to take it, not just acknowledge it."
+    },
+    martyr: {
+      name: 'The Martyr',
+      emoji: '🎯',
+      desc: "You could hand things off — but something's stopping you. Here's the complete breakdown, not just the starter version.",
+      tasks: {
+        keep: [
+          "Tasks with real safety or health stakes, for now",
+          "Anything with a hard deadline you can't risk missing",
+          "Accuracy checks on bills and finances",
+          "Medication administration and dosing",
+          "Anything involving a doctor's specific instructions",
+          "Final review of anything going to a teacher or school",
+          "Car seat installation and safety checks",
+          "Emergency preparedness (first aid kit, emergency contacts)",
+          "Anything you genuinely enjoy and want to keep doing"
+        ],
+        delegate: [
+          "Packing the school or daycare bag, no redo-checks",
+          "Bedtime routine on your partner's nights, no check-ins",
+          "Grocery shopping and putting groceries away",
+          "Laundry — start to finish, their way",
+          "One full weeknight's meal, entirely theirs",
+          "The morning drop-off routine",
+          "Choosing and buying the kids' clothes",
+          "Planning one full weekend activity",
+          "Bath time, start to finish",
+          "Packing for family trips (their bag, their kids' bags)",
+          "Meal planning for one full week",
+          "Organizing one shared space (playroom, garage, pantry)",
+          "Managing one recurring bill or subscription",
+          "Coordinating one child's extracurricular full-time",
+          "Hosting responsibilities for one gathering",
+          "Holiday decorating for one occasion",
+          "Choosing and wrapping one round of gifts",
+          "Managing the pet's full care routine",
+          "Cooking on a rotating night without a recipe check-in",
+          "Snack and lunch packing, their way, no adjustments after"
+        ],
+        letGo: [
+          "Redoing tasks after your partner does them",
+          "Perfectionism on tasks that don't actually matter",
+          "Correcting how something was folded, packed, or plated",
+          "Jumping in before a task is even finished",
+          "Assuming it'll be done wrong before it's tried",
+          "Treating \"different\" as \"worse\"",
+          "Narrating a better way while they're doing it",
+          "Taking a task back after one imperfect attempt",
+          "Needing to see it done to believe it happened",
+          "Feeling anxious rather than relieved when you're not doing it"
+        ]
+      },
+      scripts: {
+        defensive: "I know I've made it hard to hand things off before — I've redone things or jumped in early, and that's not fair to you. This isn't about you not being capable. I'm giving you {{task}} completely, and I'm working on not taking it back, even if it's done differently than I'd do it.",
+        disengaged: "I'm giving you {{task}}, start to finish, no exceptions. I won't check in, I won't redo it, and I need you to actually own it rather than waiting for me to circle back — because I'm not going to.",
+        forgetful: "I trust that you want to help with {{task}} — I think the issue has been me not fully letting go, not you not caring. So here's the deal: it's completely yours now, and if you need a reminder system to stay on top of it, let's set one up together — but the follow-through has to be real, not something I quietly rescue."
+      },
+      planWeek1: "Watch for the moment you almost redo or take back something — that's the exact instinct this month is about interrupting.",
+      guide: "Your partner just found out they've been playing a role called \"The Martyr\" in your household — meaning they tend to hold onto tasks even when handing them off would help, often because past attempts to delegate ended in it being redone or taken back. If that sounds familiar, it's not a reflection of your ability — it's a control pattern they're actively trying to change. The most useful thing you can do is take a task fully when it's offered, do it your way, and not be surprised if they seem uneasy watching you do it differently. That discomfort is real and it's theirs to work through — your job is just to actually follow through, so the letting-go has evidence it's safe."
+    },
+    default: {
+      name: 'The Default',
+      emoji: '📥',
+      desc: "If nobody claims it, it becomes yours. Here's the complete breakdown, not just the starter version.",
+      tasks: {
+        keep: [
+          "Tasks that genuinely need you specifically, right now",
+          "Anything with a hard external deadline",
+          "Safety-critical tasks until a hand-off is confirmed",
+          "Anything you've explicitly and willingly claimed",
+          "Tasks tied to your own appointments or commitments",
+          "Final say on anything with real financial stakes",
+          "Coordinating your own work schedule conflicts",
+          "Things only you have login or access for, for now",
+          "Whatever's actively on fire today"
+        ],
+        delegate: [
+          "Restocking diapers, wipes, and snacks",
+          "Tracking when the recycling and trash go out",
+          "Noticing and replacing worn-out kid gear",
+          "Managing the family car's maintenance schedule",
+          "Keeping track of what's in and out of the fridge & pantry",
+          "Handling returns and exchanges",
+          "Managing the family's streaming and subscription accounts",
+          "Watching the mail and sorting what needs action",
+          "Restocking bathroom and cleaning supplies",
+          "Tracking when filters (air, water) need changing",
+          "Managing yard work and outdoor upkeep",
+          "Handling one kid's activity registration end-to-end",
+          "Tracking a specific recurring bill from due date to payment",
+          "Managing a shared inbox or account nobody's claimed",
+          "Coordinating one holiday or occasion start to finish",
+          "Owning meal planning for one specific night each week",
+          "Managing a specific room's organization and upkeep",
+          "Handling one child's school communication thread",
+          "Tracking a pet's specific recurring need",
+          "Owning the \"who's free this weekend\" coordination"
+        ],
+        letGo: [
+          "Being the automatic fallback for anything unassigned",
+          "Absorbing tasks because asking feels slower",
+          "Assuming ownership the moment you notice something",
+          "Not naming who's responsible for new tasks",
+          "Doing it yourself rather than negotiating who should",
+          "Treating \"I noticed it\" as \"it's mine\"",
+          "Picking up tasks nobody has explicitly agreed to split",
+          "Filling silence with action instead of a conversation",
+          "Assuming your partner won't notice or care",
+          "Never revisiting who owns what once it's settled once"
+        ]
+      },
+      scripts: {
+        defensive: "I don't think either of us has been intentionally letting this happen, but {{task}} — and things like it — keep landing on me by default. I'm not saying you're not doing your share elsewhere. I'm saying we need to actually name who owns things like this instead of it defaulting to whoever notices first, which is usually me.",
+        disengaged: "I need us to name an owner for {{task}} right now, out loud, so it's not just assumed to be mine. If it's unclear whose job something is, I need you to raise that instead of leaving it for me to absorb.",
+        forgetful: "I know you're not trying to let things fall on me — I think we just don't have a clear system for who owns what when something new comes up. Let's agree that {{task}}, and anything like it going forward, gets explicitly assigned instead of defaulting to whoever notices — and let's write that down somewhere so it's not just a conversation we forget."
+      },
+      planWeek1: "Watch for tasks that became yours without anyone deciding that on purpose — those are the ones to flag first.",
+      guide: "Your partner just found out they've been playing a role called \"The Default\" in your household — meaning that when something isn't clearly assigned to either of you, it quietly becomes theirs, not because they're better suited to it, but because they're the one who ends up noticing and absorbing it. Over time, that adds up to carrying a lot that was never actually decided or agreed to. What helps most isn't trying to notice everything first — it's agreeing, out loud, whenever something new comes up, on who's actually going to own it, instead of letting it default to whoever flags it. Noticing something needs to happen and owning it are two different jobs; the goal is not letting the first automatically become the second."
+    }
+  };
+
+  var currentArch = null;
+  var currentTaskForScript = '';
+  var activeTab = 'defensive';
+  var scriptTextEl = document.getElementById('scriptText');
+
+  function lowerFirst(s) { return s.charAt(0).toLowerCase() + s.slice(1); }
+
+  function buildBoardColumn(containerId, items, column) {
+    var container = document.getElementById(containerId);
+    container.innerHTML = '';
+    items.forEach(function (label) { container.appendChild(buildBoardItem(label, column)); });
+  }
+
+  function buildBoardItem(label, column) {
+    var row = document.createElement('div');
+    row.className = 'board-item';
+    var span = document.createElement('span');
+    span.textContent = label;
+    row.appendChild(span);
+
+    var select = document.createElement('select');
+    select.setAttribute('aria-label', 'Move "' + label + '"');
+    [['keep', 'Keep'], ['delegate', 'Delegate'], ['letGo', 'Let Go']].forEach(function (pair) {
+      var o = document.createElement('option');
+      o.value = pair[0];
+      o.textContent = pair[1];
+      if (pair[0] === column) o.selected = true;
+      select.appendChild(o);
+    });
+    select.addEventListener('change', function () {
+      row.remove();
+      var targetId = { keep: 'colKeep', delegate: 'colDelegate', letGo: 'colLetGo' }[select.value];
+      document.getElementById(targetId).appendChild(buildBoardItem(label, select.value));
+    });
+    row.appendChild(select);
+    return row;
+  }
+
+  var TAB_LABELS = { defensive: 'For a defensive partner', disengaged: 'For a disengaged partner', forgetful: 'For a willing but forgetful partner' };
+
+  function renderScript() {
+    var arch = FULL[currentArch];
+    scriptTextEl.textContent = arch.scripts[activeTab].replace('{{task}}', lowerFirst(currentTaskForScript));
+    document.getElementById('scriptActiveLabel').textContent = TAB_LABELS[activeTab];
+  }
+
+  function selectArchetype(key) {
+    currentArch = key;
+    var arch = FULL[key];
+    currentTaskForScript = arch.tasks.delegate[0];
+
+    Array.prototype.forEach.call(document.querySelectorAll('.picker-btn'), function (b) {
+      b.classList.toggle('active', b.getAttribute('data-arch') === key);
+    });
+
+    document.getElementById('fullTitle').textContent = "You're " + arch.name;
+    document.getElementById('fullDesc').textContent = arch.desc;
+    document.getElementById('planWeek1').textContent = arch.planWeek1;
+    document.getElementById('guideText').textContent = arch.guide;
+
+    buildBoardColumn('colKeep', arch.tasks.keep, 'keep');
+    buildBoardColumn('colDelegate', arch.tasks.delegate, 'delegate');
+    buildBoardColumn('colLetGo', arch.tasks.letGo, 'letGo');
+
+    activeTab = 'defensive';
+    Array.prototype.forEach.call(document.querySelectorAll('.script-tab'), function (t) {
+      var isActive = t.getAttribute('data-tab') === 'defensive';
+      t.classList.toggle('active', isActive);
+      t.setAttribute('aria-selected', isActive ? 'true' : 'false');
+    });
+    renderScript();
+
+    document.getElementById('fullContent').hidden = false;
+    document.getElementById('fullContent').scrollIntoView({ behavior: 'smooth', block: 'start' });
+  }
+
+  document.getElementById('pickerGrid').addEventListener('click', function (e) {
+    var btn = e.target.closest('.picker-btn');
+    if (btn) selectArchetype(btn.getAttribute('data-arch'));
+  });
+
+  Array.prototype.forEach.call(document.querySelectorAll('.script-tab'), function (tab) {
+    tab.addEventListener('click', function () {
+      activeTab = tab.getAttribute('data-tab');
+      Array.prototype.forEach.call(document.querySelectorAll('.script-tab'), function (t) {
+        var isActive = t === tab;
+        t.classList.toggle('active', isActive);
+        t.setAttribute('aria-selected', isActive ? 'true' : 'false');
+      });
+      renderScript();
+    });
+  });
+
+  function wireCopyButton(btnId, getText) {
+    var btn = document.getElementById(btnId);
+    btn.addEventListener('click', function () {
+      var text = getText();
+      var done = function () {
+        var original = btn.textContent;
+        btn.textContent = 'Copied!';
+        setTimeout(function () { btn.textContent = original; }, 1800);
+      };
+      if (navigator.clipboard && navigator.clipboard.writeText) {
+        navigator.clipboard.writeText(text).then(done).catch(function () { fallbackCopy(text, done); });
+      } else {
+        fallbackCopy(text, done);
+      }
+    });
+  }
+
+  function fallbackCopy(text, done) {
+    var ta = document.createElement('textarea');
+    ta.value = text;
+    ta.style.position = 'fixed';
+    ta.style.opacity = '0';
+    document.body.appendChild(ta);
+    ta.select();
+    try { document.execCommand('copy'); done(); } catch (err) { /* clipboard unavailable */ }
+    document.body.removeChild(ta);
+  }
+
+  wireCopyButton('copyScriptBtn', function () { return scriptTextEl.textContent; });
+  wireCopyButton('copyGuideBtn', function () { return document.getElementById('guideText').textContent; });
+
+  document.getElementById('downloadPdfBtn').addEventListener('click', function () { window.print(); });
+})();
+</script>
+</body>
+</html>
