@@ -347,8 +347,6 @@
     }
   };
 
-  var ARCH_KEYS = ['manager', 'ghost', 'martyr', 'default'];
-
   function shuffle(arr) {
     var a = arr.slice();
     for (var i = a.length - 1; i > 0; i--) {
@@ -386,6 +384,7 @@
   var quizCountEl = document.getElementById('quizCount');
   var progressBar = document.getElementById('progressBar');
   var quizBackBtn = document.getElementById('quizBackBtn');
+  var optionOrderCache = {}; // freezes each question's shuffled order so revisiting via Back doesn't reshuffle
 
   function showScreen(el) {
     [screenIntro, screenQuestion, screenResult].forEach(function (s) {
@@ -400,8 +399,12 @@
     progressBar.style.width = (((state.index) / QUESTIONS.length) * 100) + '%';
     document.getElementById('quizProgressWrap').setAttribute('aria-valuenow', Math.round((state.index / QUESTIONS.length) * 100));
 
+    if (!optionOrderCache[state.index]) {
+      optionOrderCache[state.index] = shuffle(q.options);
+    }
+
     quizOptionsEl.innerHTML = '';
-    shuffle(q.options).forEach(function (opt) {
+    optionOrderCache[state.index].forEach(function (opt) {
       var btn = document.createElement('button');
       btn.type = 'button';
       btn.className = 'quiz-opt';
@@ -430,18 +433,49 @@
     }
   }
 
+  /* Each archetype-flavored answer implies a stance on 3 traits. Summing
+     these across all 8 answers, then running a decision tree, is what
+     actually determines the result — this is real scoring, not a raw
+     popularity tally of which flavor got picked most. See the "How it
+     works" copy on each scenario page, which describes this mechanism. */
+  var TRAIT_WEIGHTS = {
+    manager: { proactive: 1, visible: 1, control: -1 },
+    ghost: { proactive: 1, visible: -1, control: 0 },
+    martyr: { proactive: 1, visible: 1, control: 1 },
+    default: { proactive: -1, visible: 0, control: 0 }
+  };
+
   function tally() {
     var counts = { manager: 0, ghost: 0, martyr: 0, default: 0 };
-    state.answers.forEach(function (a) { if (counts[a] !== undefined) counts[a] += 1; });
-    var top = ARCH_KEYS.slice().sort(function (a, b) { return counts[b] - counts[a]; })[0];
-    return { counts: counts, top: top };
+    var traits = { proactive: 0, visible: 0, control: 0 };
+    state.answers.forEach(function (a) {
+      if (counts[a] === undefined) return;
+      counts[a] += 1;
+      var w = TRAIT_WEIGHTS[a];
+      traits.proactive += w.proactive;
+      traits.visible += w.visible;
+      traits.control += w.control;
+    });
+
+    var top;
+    if (traits.proactive <= 0) {
+      top = 'default';
+    } else if (traits.visible <= 0) {
+      top = 'ghost';
+    } else if (traits.control > 0) {
+      top = 'martyr';
+    } else {
+      top = 'manager';
+    }
+
+    return { counts: counts, traits: traits, top: top };
   }
 
   function finishQuiz() {
     var result = tally();
     state.resultArch = result.top;
     persistState();
-    trackEvent('quiz_completed', { archetype: result.top, counts: result.counts });
+    trackEvent('quiz_completed', { archetype: result.top, counts: result.counts, traits: result.traits });
     renderResult(result.top);
   }
 
@@ -617,7 +651,7 @@
 
     var upsellLine = document.getElementById('ledgerUpsellLine');
     if (upsellLine) {
-      upsellLine.textContent = "You're " + arch.name + " — this starter Ledger is enough to start tonight. The Full System adds the other 130+ tasks, a 30-day follow-through plan, and a script built for how your partner actually responds.";
+      upsellLine.textContent = "You're " + arch.name + " — this starter Ledger is enough to start tonight. The Full System adds the complete 150+ task inventory, a 30-day follow-through plan, and a script built for how your partner actually responds.";
     }
 
     ledgerSection.hidden = false;

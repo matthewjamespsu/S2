@@ -1,0 +1,5 @@
+User-agent: *
+Allow: /
+Disallow: /full-ledger/
+
+Sitemap: https://your-domain-here.com/sitemap.xml

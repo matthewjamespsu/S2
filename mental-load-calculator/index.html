@@ -5,6 +5,17 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
 <title>Mental Load Calculator — What's Your Unpaid Labor Worth?</title>
 <meta name="description" content="Parents' unpaid mental load has been valued at roughly $60,000/year. Enter your hours, get your number in seconds — no quiz, no email required.">
+<link rel="canonical" href="https://your-domain-here.com/mental-load-calculator/">
+
+<meta property="og:type" content="website">
+<meta property="og:url" content="https://your-domain-here.com/mental-load-calculator/">
+<meta property="og:title" content="Mental Load Calculator — What's Your Unpaid Labor Worth?">
+<meta property="og:description" content="Parents' unpaid mental load has been valued at roughly $60,000/year. Enter your hours, get your number in seconds — no quiz, no email required.">
+<meta property="og:image" content="https://your-domain-here.com/og/mental-load-calculator.png">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="Mental Load Calculator — What's Your Unpaid Labor Worth?">
+<meta name="twitter:description" content="Parents' unpaid mental load has been valued at roughly $60,000/year. Enter your hours, get your number in seconds — no quiz, no email required.">
+<meta name="twitter:image" content="https://your-domain-here.com/og/mental-load-calculator.png">
 
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -55,7 +66,7 @@
         <div class="calc-result" id="calcResult" hidden>
           <p class="calc-result-label">Your mental load is worth roughly</p>
           <p class="calc-result-value" id="calcResultValue">$0</p>
-          <p class="calc-result-sub">a year, based on a blended market rate for household management, childcare coordination, and admin work — not far off the <strong>$60,000/year</strong> figure researchers cite for this labor nationally.</p>
+          <p class="calc-result-sub" id="calcResultSub">a year, based on a blended market rate for household management, childcare coordination, and admin work.</p>
         </div>
       </div>
 
@@ -86,10 +97,24 @@
   var calcBtn = document.getElementById('calcBtn');
   var calcResult = document.getElementById('calcResult');
   var calcResultValue = document.getElementById('calcResultValue');
+  var calcResultSub = document.getElementById('calcResultSub');
   var calcCta = document.getElementById('calcCta');
+  var NATIONAL_FIGURE = 60000;
 
   function formatUSD(n) {
     return '$' + Math.round(n).toLocaleString('en-US');
+  }
+
+  function resultSubtext(annual) {
+    var base = 'a year, based on a blended market rate for household management, childcare coordination, and admin work';
+    var ratio = annual / NATIONAL_FIGURE;
+    if (ratio < 0.75) {
+      return base + ' — and that\'s likely an undercount. Researchers peg the national average for this labor closer to <strong>$60,000/year</strong>.';
+    }
+    if (ratio > 1.3) {
+      return base + ' — well above the <strong>$60,000/year</strong> figure often cited nationally. However you counted your hours, it\'s clearly not nothing.';
+    }
+    return base + ' — not far off the <strong>$60,000/year</strong> figure researchers cite for this labor nationally.';
   }
 
   calcBtn.addEventListener('click', function () {
@@ -100,6 +125,7 @@
     }
     var annual = hours * 52 * HOURLY_RATE;
     calcResultValue.textContent = formatUSD(annual);
+    calcResultSub.innerHTML = resultSubtext(annual);
     calcResult.hidden = false;
     calcCta.hidden = false;
     try {
