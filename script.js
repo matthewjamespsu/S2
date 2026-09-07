@@ -2,6 +2,37 @@
   'use strict';
 
   /* ==========================================================================
+     Scenario (site architecture: hub-and-spoke)
+     ==========================================================================
+     Each scenario page (return-to-work/, back-to-school/, holidays/,
+     new-sibling/) sets `window.HHL_SCENARIO` in an inline <script> BEFORE
+     this file loads, e.g. <script>window.HHL_SCENARIO = 'backToSchool';
+     </script>. That's the only thing that differs between pages — all four
+     share this same quiz engine, archetype scoring, and Ledger/upsell logic.
+     The scenario only changes copy (the Ledger's "cost" lead-in sentence,
+     and the ConvertKit tag), never the quiz questions or archetype scoring.
+     ========================================================================== */
+  var SCENARIOS = {
+    returnToWork: {
+      label: 'Return to Work',
+      costLeadIn: "Since you've been back at work, "
+    },
+    backToSchool: {
+      label: 'Back to School',
+      costLeadIn: 'Since school started back up, '
+    },
+    holidays: {
+      label: 'Holidays',
+      costLeadIn: 'Since the holiday season kicked in, '
+    },
+    newSibling: {
+      label: 'New Sibling',
+      costLeadIn: 'Since your newest arrived, '
+    }
+  };
+  var CURRENT_SCENARIO = SCENARIOS[window.HHL_SCENARIO] ? window.HHL_SCENARIO : 'returnToWork';
+
+  /* ==========================================================================
      ConvertKit configuration
      ==========================================================================
      Setup (one-time, ~5 min):
@@ -48,7 +79,7 @@
       body: JSON.stringify({
         api_key: CONVERTKIT_CONFIG.apiKey,
         email: email,
-        fields: Object.assign({ archetype: archetypeLabel }, extraFields || {})
+        fields: Object.assign({ archetype: archetypeLabel, scenario: SCENARIOS[CURRENT_SCENARIO].label }, extraFields || {})
       })
     })
       .then(function (res) { return res.json().then(function (data) { return { ok: res.ok, data: data }; }); })
@@ -68,7 +99,7 @@
      posting this same event shape to Segment/PostHog) before this script runs.
      ========================================================================== */
   function trackEvent(name, data) {
-    var payload = Object.assign({ event: name, ts: Date.now() }, data || {});
+    var payload = Object.assign({ event: name, scenario: CURRENT_SCENARIO, ts: Date.now() }, data || {});
     try {
       window.dataLayer = window.dataLayer || [];
       window.dataLayer.push(payload);
@@ -172,7 +203,7 @@
       accent: '#C4562D',
       tagline: 'High ownership · High visibility',
       teaser: "You don't just do the work — you assign it, track it, and follow up when it doesn't happen. Enter your email to see exactly what that's costing you, and the script to fix it.",
-      cost: "Since you've been back at work, you've become the household's unpaid project manager — not just doing the work, but assigning it, tracking it, and following up when it doesn't happen. That's a second full-time job stacked on top of your actual one, and it's exactly why you're tired even on days you \"didn't do much.\"",
+      costBody: "you've become the household's unpaid project manager — not just doing the work, but assigning it, tracking it, and following up when it doesn't happen. That's a second full-time job stacked on top of your actual one, and it's exactly why you're tired even on days you \"didn't do much.\"",
       tasks: {
         keep: [
           "Tracking medical & school appointments",
@@ -209,7 +240,7 @@
       accent: '#5B6E8C',
       tagline: 'High ownership · Low visibility',
       teaser: "You're carrying more than anyone realizes — including your partner. Enter your email to see exactly what that's costing you, and the script to fix it.",
-      cost: "Since you've been back at work, you've quietly absorbed everything that used to get split — the appointments, the forms, the restocking — without ever naming it out loud. Your partner has no idea how much is happening, because you've made sure it never becomes a problem for them. That invisibility is exactly what's exhausting you.",
+      costBody: "you've quietly absorbed everything that used to get split — the appointments, the forms, the restocking — without ever naming it out loud. Your partner has no idea how much is happening, because you've made sure it never becomes a problem for them. That invisibility is exactly what's exhausting you.",
       tasks: {
         keep: [
           "The one thing only you currently know how to do",
@@ -246,7 +277,7 @@
       accent: '#8A6BAF',
       tagline: "High ownership · Won't release control",
       teaser: "You could hand things off — but something's stopping you. Enter your email to see exactly what that's costing you, and the script to fix it.",
-      cost: "Since you've been back at work, you've held onto control even when you didn't have the bandwidth for it — because handing something off feels riskier than just doing it yourself. That instinct made sense when you had more time. Now it's the reason you're carrying a full household on top of a full job.",
+      costBody: "you've held onto control even when you didn't have the bandwidth for it — because handing something off feels riskier than just doing it yourself. That instinct made sense when you had more time. Now it's the reason you're carrying a full household on top of a full job.",
       tasks: {
         keep: [
           "Tasks with real safety or health stakes, for now",
@@ -283,7 +314,7 @@
       accent: '#3E8E7E',
       tagline: 'Owner of everything unclaimed',
       teaser: "If nobody claims it, it becomes yours. Enter your email to see exactly what that's costing you, and the script to fix it.",
-      cost: "Since you've been back at work, anything nobody explicitly claims has quietly become yours — not because you're better at it, but because you're the fallback. Every unassigned task defaults to you by exhaustion, not by choice, and that's the pattern that's wearing you down.",
+      costBody: "anything nobody explicitly claims has quietly become yours — not because you're better at it, but because you're the fallback. Every unassigned task defaults to you by exhaustion, not by choice, and that's the pattern that's wearing you down.",
       tasks: {
         keep: [
           "Tasks that genuinely need you specifically, right now",
@@ -555,7 +586,7 @@
     currentTaskForScript = arch.tasks.delegate[0] || arch.tasks.keep[0];
 
     document.getElementById('ledgerTitle').textContent = "You're " + arch.name;
-    document.getElementById('ledgerCost').textContent = arch.cost;
+    document.getElementById('ledgerCost').textContent = SCENARIOS[CURRENT_SCENARIO].costLeadIn + arch.costBody;
 
     buildBoardColumn('colKeep', arch.tasks.keep, 'keep');
     buildBoardColumn('colDelegate', arch.tasks.delegate, 'delegate');
