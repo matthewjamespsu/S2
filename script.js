@@ -2,6 +2,62 @@
   'use strict';
 
   /* ==========================================================================
+     ConvertKit configuration
+     ==========================================================================
+     Setup (one-time, ~5 min):
+       1. Sign up at https://app.convertkit.com (free plan covers 10k subs).
+       2. Grow → Landing Pages & Forms → New Form → create one (any type,
+          e.g. "Inline") named something like "Household Ledger Quiz".
+          Open it and copy the numeric Form ID shown in its settings URL
+          (app.convertkit.com/forms/designers/<FORM_ID>/edit).
+       3. Settings → Advanced → API → copy the "API Key" (the public key —
+          NOT "API Secret". The public key is safe to ship in client-side
+          JS; it's the same one ConvertKit's own embeddable form widgets
+          expose in the page source).
+       4. Settings → Advanced → Custom Fields → add a field with the key
+          "archetype". This lets you segment/trigger automations on which
+          of the 4 results (Manager/Ghost/Martyr/Default) each lead got.
+       5. Optional but worth it: build a Visual Automation per archetype
+          ("when custom field archetype is updated & equals Manager" →
+          send a follow-up sequence nudging toward the paid offer).
+       6. Paste the Form ID and API Key below. Until you do, the form still
+          works end-to-end (validates, unlocks the Ledger) — it just skips
+          the network call and logs a console warning instead.
+     ========================================================================== */
+  var CONVERTKIT_CONFIG = {
+    formId: 'YOUR_CONVERTKIT_FORM_ID',
+    apiKey: 'YOUR_CONVERTKIT_PUBLIC_API_KEY'
+  };
+
+  function isConvertKitConfigured() {
+    return CONVERTKIT_CONFIG.formId !== 'YOUR_CONVERTKIT_FORM_ID' &&
+      CONVERTKIT_CONFIG.apiKey !== 'YOUR_CONVERTKIT_PUBLIC_API_KEY';
+  }
+
+  function subscribeToConvertKit(email, archetypeLabel) {
+    if (!isConvertKitConfigured()) {
+      console.warn('[Household Ledger] ConvertKit not configured yet — skipping subscribe. See CONVERTKIT_CONFIG at the top of script.js.');
+      return;
+    }
+    fetch('https://api.convertkit.com/v3/forms/' + CONVERTKIT_CONFIG.formId + '/subscribe', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        api_key: CONVERTKIT_CONFIG.apiKey,
+        email: email,
+        fields: { archetype: archetypeLabel }
+      })
+    })
+      .then(function (res) { return res.json().then(function (data) { return { ok: res.ok, data: data }; }); })
+      .then(function (result) {
+        trackEvent(result.ok ? 'convertkit_subscribed' : 'convertkit_error', { archetype: archetypeLabel, detail: result.data });
+      })
+      .catch(function (err) {
+        trackEvent('convertkit_error', { archetype: archetypeLabel, detail: String(err) });
+      });
+  }
+
+  /* ==========================================================================
      Lightweight funnel analytics
      V2 note: this pushes to window.dataLayer (GA4/GTM convention) when present
      and always logs to localStorage so drop-off is inspectable without a
@@ -331,15 +387,11 @@
       emailError.hidden = true;
       emailInput.removeAttribute('aria-invalid');
 
-      // NOTE: front-end-only capture. Wire this to a real list provider
-      // (ConvertKit, Mailchimp) or a serverless webhook before launch —
-      // see build spec section 7. Example:
-      // fetch('https://your-endpoint.example.com/subscribe', {
-      //   method: 'POST',
-      //   headers: { 'Content-Type': 'application/json' },
-      //   body: JSON.stringify({ email: value, archetype: state.resultArch, source: 'household-ledger-landing' })
-      // });
+      var archetypeLabel = ARCHETYPES[state.resultArch].name.replace('The ', '');
+      subscribeToConvertKit(value, archetypeLabel);
 
+      // Local backup log — useful if the ConvertKit call fails (offline,
+      // not yet configured, etc.) so no lead is silently lost.
       try {
         var stored = JSON.parse(localStorage.getItem('hhl_leads') || '[]');
         stored.push({ email: value, archetype: state.resultArch, ts: Date.now() });
