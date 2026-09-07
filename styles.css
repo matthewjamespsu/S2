@@ -914,6 +914,8 @@ a{ color: inherit; text-decoration: none; }
 }
 .wordmark-footer{ font-size: 1rem; color: var(--ink-soft); }
 .footer p{ font-size: 0.82rem; color: #a89f96; }
+.footer p a{ color: #a89f96; text-decoration: underline; text-underline-offset: 2px; }
+.footer p a:hover{ color: var(--ink-soft); }
 
 /* ---------- Sticky mobile CTA ---------- */
 .sticky-cta{
