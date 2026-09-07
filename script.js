@@ -365,13 +365,19 @@
     resultArch: null
   };
 
+  // Scoped per scenario — sessionStorage is shared across the whole site, so
+  // without this, taking the quiz on one scenario page and then visiting
+  // another in the same tab would resume with the first page's result
+  // instead of starting fresh (and skip that page's own email capture).
+  var STATE_KEY = 'hhl_quiz_state_' + CURRENT_SCENARIO;
+
   try {
-    var saved = JSON.parse(sessionStorage.getItem('hhl_quiz_state') || 'null');
+    var saved = JSON.parse(sessionStorage.getItem(STATE_KEY) || 'null');
     if (saved && Array.isArray(saved.answers)) state = saved;
   } catch (err) { /* ignore corrupt/blocked storage */ }
 
   function persistState() {
-    try { sessionStorage.setItem('hhl_quiz_state', JSON.stringify(state)); }
+    try { sessionStorage.setItem(STATE_KEY, JSON.stringify(state)); }
     catch (err) { /* non-critical */ }
   }
 
