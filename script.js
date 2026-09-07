@@ -34,18 +34,21 @@
       CONVERTKIT_CONFIG.apiKey !== 'YOUR_CONVERTKIT_PUBLIC_API_KEY';
   }
 
-  function subscribeToConvertKit(email, archetypeLabel) {
+  function subscribeToConvertKit(email, archetypeLabel, extraFields) {
     if (!isConvertKitConfigured()) {
       console.warn('[Household Ledger] ConvertKit not configured yet — skipping subscribe. See CONVERTKIT_CONFIG at the top of script.js.');
       return;
     }
+    // ConvertKit's subscribe endpoint upserts by email, so calling it again
+    // for an existing subscriber (e.g. to add premium_interest) just merges
+    // the new fields onto their existing record rather than duplicating it.
     fetch('https://api.convertkit.com/v3/forms/' + CONVERTKIT_CONFIG.formId + '/subscribe', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({
         api_key: CONVERTKIT_CONFIG.apiKey,
         email: email,
-        fields: { archetype: archetypeLabel }
+        fields: Object.assign({ archetype: archetypeLabel }, extraFields || {})
       })
     })
       .then(function (res) { return res.json().then(function (data) { return { ok: res.ok, data: data }; }); })
@@ -171,9 +174,29 @@
       teaser: "You don't just do the work — you assign it, track it, and follow up when it doesn't happen. Enter your email to see exactly what that's costing you, and the script to fix it.",
       cost: "Since you've been back at work, you've become the household's unpaid project manager — not just doing the work, but assigning it, tracking it, and following up when it doesn't happen. That's a second full-time job stacked on top of your actual one, and it's exactly why you're tired even on days you \"didn't do much.\"",
       tasks: {
-        keep: ["Tracking medical & school appointments", "Owning the shared family calendar"],
-        delegate: ["Assigning and tracking weekly chores", "Planning meals for the week", "Coordinating gifts for birthdays & holidays"],
-        letGo: ["Double-checking delegated tasks got done", "Mentally \"managing\" your partner's to-do list"]
+        keep: [
+          "Tracking medical & school appointments",
+          "Owning the shared family calendar",
+          "Big-picture school year planning (deadlines, calendars)",
+          "The family's emergency contact & medical info list"
+        ],
+        delegate: [
+          "Assigning and tracking weekly chores",
+          "Planning meals for the week",
+          "Coordinating gifts for birthdays & holidays",
+          "Scheduling recurring haircuts and checkups",
+          "Managing the family group chat and logistics texts",
+          "Booking childcare or babysitters",
+          "Coordinating carpools and activity pickups",
+          "Renewing school forms and sports registrations"
+        ],
+        letGo: [
+          "Double-checking delegated tasks got done",
+          "Mentally \"managing\" your partner's to-do list",
+          "Sending reminder texts for things already assigned",
+          "Re-explaining the plan every time it's asked for",
+          "Feeling responsible when a delegated task slips"
+        ]
       },
       script: {
         self: "I've been the one planning, assigning, and following up on almost everything at home — and it's exhausting, even on the days you're helping. I don't want to be the household's project manager anymore. Starting this week, I'm handing you full ownership of {{task}} — not just doing it, but noticing it needs to happen and tracking it yourself. I'm not going to remind you or double-check. If it slips, that's a sign we need to adjust, not a reason for me to take it back.",
@@ -188,9 +211,29 @@
       teaser: "You're carrying more than anyone realizes — including your partner. Enter your email to see exactly what that's costing you, and the script to fix it.",
       cost: "Since you've been back at work, you've quietly absorbed everything that used to get split — the appointments, the forms, the restocking — without ever naming it out loud. Your partner has no idea how much is happening, because you've made sure it never becomes a problem for them. That invisibility is exactly what's exhausting you.",
       tasks: {
-        keep: ["The one thing only you currently know how to do"],
-        delegate: ["Daycare & school forms / permission slips", "Restocking household supplies", "Scheduling kids' appointments"],
-        letGo: ["Quietly doing tasks without mentioning them", "Covering your partner's share to avoid a conversation"]
+        keep: [
+          "The one thing only you currently know how to do",
+          "Managing passwords & logins for family accounts",
+          "Tracking family health history and insurance details"
+        ],
+        delegate: [
+          "Daycare & school forms / permission slips",
+          "Restocking household supplies",
+          "Scheduling kids' appointments",
+          "Managing family calendar invites",
+          "Ordering replacement clothes and shoes as kids grow",
+          "Handling school communication emails",
+          "Renewing prescriptions",
+          "Packing seasonal clothing swaps"
+        ],
+        letGo: [
+          "Quietly doing tasks without mentioning them",
+          "Covering your partner's share to avoid a conversation",
+          "Absorbing last-minute changes without flagging them",
+          "Fixing small household issues silently",
+          "Pre-solving problems before they become visible",
+          "Keeping a mental list nobody else knows exists"
+        ]
       },
       script: {
         self: "There's a lot happening at home that you probably don't realize I'm handling — including {{task}}. I've been doing it quietly because it felt faster, but it's made my load invisible, and that's a big part of why I'm exhausted. Starting now, I'm going to say out loud when something needs doing instead of just absorbing it — and I need you to take it from there.",
@@ -205,9 +248,29 @@
       teaser: "You could hand things off — but something's stopping you. Enter your email to see exactly what that's costing you, and the script to fix it.",
       cost: "Since you've been back at work, you've held onto control even when you didn't have the bandwidth for it — because handing something off feels riskier than just doing it yourself. That instinct made sense when you had more time. Now it's the reason you're carrying a full household on top of a full job.",
       tasks: {
-        keep: ["Tasks with real safety or health stakes, for now"],
-        delegate: ["Packing the school or daycare bag, no redo-checks", "Bedtime routine on your partner's nights, no check-ins"],
-        letGo: ["Redoing tasks after your partner does them", "Perfectionism on tasks that don't actually matter"]
+        keep: [
+          "Tasks with real safety or health stakes, for now",
+          "Anything with a hard deadline you can't risk missing",
+          "Accuracy checks on bills and finances"
+        ],
+        delegate: [
+          "Packing the school or daycare bag, no redo-checks",
+          "Bedtime routine on your partner's nights, no check-ins",
+          "Grocery shopping and putting groceries away",
+          "Laundry — start to finish, their way",
+          "One full weeknight's meal, entirely theirs",
+          "The morning drop-off routine",
+          "Choosing and buying the kids' clothes",
+          "Planning one full weekend activity"
+        ],
+        letGo: [
+          "Redoing tasks after your partner does them",
+          "Perfectionism on tasks that don't actually matter",
+          "Correcting how something was folded, packed, or plated",
+          "Jumping in before a task is even finished",
+          "Assuming it'll be done wrong before it's tried",
+          "Treating \"different\" as \"worse\""
+        ]
       },
       script: {
         self: "I know I've made it hard to hand things off — I've redone things after you or jumped back in early. That's on me, but it means I'm carrying everything, and it's not sustainable. I'm giving you full ownership of {{task}}. Even if it's not how I'd do it, I'm not going to redo it. I need to actually let go, not just say I will.",
@@ -222,9 +285,29 @@
       teaser: "If nobody claims it, it becomes yours. Enter your email to see exactly what that's costing you, and the script to fix it.",
       cost: "Since you've been back at work, anything nobody explicitly claims has quietly become yours — not because you're better at it, but because you're the fallback. Every unassigned task defaults to you by exhaustion, not by choice, and that's the pattern that's wearing you down.",
       tasks: {
-        keep: ["Tasks that genuinely need you specifically, right now"],
-        delegate: ["Restocking diapers, wipes, and snacks", "Tracking when the recycling and trash go out"],
-        letGo: ["Being the automatic fallback for anything unassigned", "Absorbing tasks because asking feels slower"]
+        keep: [
+          "Tasks that genuinely need you specifically, right now",
+          "Anything with a hard external deadline",
+          "Safety-critical tasks until a hand-off is confirmed"
+        ],
+        delegate: [
+          "Restocking diapers, wipes, and snacks",
+          "Tracking when the recycling and trash go out",
+          "Noticing and replacing worn-out kid gear",
+          "Managing the family car's maintenance schedule",
+          "Keeping track of what's in and out of the fridge & pantry",
+          "Handling returns and exchanges",
+          "Managing the family's streaming and subscription accounts",
+          "Watching the mail and sorting what needs action"
+        ],
+        letGo: [
+          "Being the automatic fallback for anything unassigned",
+          "Absorbing tasks because asking feels slower",
+          "Assuming ownership the moment you notice something",
+          "Not naming who's responsible for new tasks",
+          "Doing it yourself rather than negotiating who should",
+          "Treating \"I noticed it\" as \"it's mine\""
+        ]
       },
       script: {
         self: "I've noticed that anything nobody explicitly owns quietly becomes mine by default. I don't want to keep operating that way. I need us to actually name who owns {{task}} instead of leaving it unassigned — and going forward, if something isn't explicitly someone else's job, I need us to decide together instead of it landing on me automatically.",
@@ -390,6 +473,9 @@
       var archetypeLabel = ARCHETYPES[state.resultArch].name.replace('The ', '');
       subscribeToConvertKit(value, archetypeLabel);
 
+      state.email = value;
+      persistState();
+
       // Local backup log — useful if the ConvertKit call fails (offline,
       // not yet configured, etc.) so no lead is silently lost.
       try {
@@ -400,6 +486,8 @@
 
       trackEvent('email_submitted', { archetype: state.resultArch });
       unlockLedger(state.resultArch);
+      document.getElementById('ledger').scrollIntoView({ behavior: 'smooth', block: 'start' });
+      refreshUpsellCta();
     });
 
     emailInput.addEventListener('input', function () {
@@ -483,12 +571,11 @@
 
     var upsellLine = document.getElementById('ledgerUpsellLine');
     if (upsellLine) {
-      upsellLine.textContent = "You're " + arch.name + " — the Full System gives you all 150 tasks, a 90-day hand-off plan, and a partner-facing version built for this exact conversation.";
+      upsellLine.textContent = "You're " + arch.name + " — this starter Ledger is enough to start tonight. The Full System adds the other 130+ tasks, a 30-day follow-through plan, and a script built for how your partner actually responds.";
     }
 
     ledgerSection.hidden = false;
     trackEvent('ledger_unlocked', { archetype: archKey });
-    ledgerSection.scrollIntoView({ behavior: 'smooth', block: 'start' });
   }
 
   Array.prototype.forEach.call(document.querySelectorAll('.script-tab'), function (tab) {
@@ -547,17 +634,47 @@
     });
   }
 
-  var upsellCta = document.querySelector('.upsell a.btn');
-  if (upsellCta) {
-    upsellCta.addEventListener('click', function () {
-      trackEvent('upsell_cta_clicked', { archetype: state.resultArch });
+  /* ---------- Premium waitlist CTA ----------
+     No checkout exists yet (that's a separate backend decision — Stripe/
+     Gumroad/Lemon Squeezy). Until then, this captures real purchase intent:
+     once someone already has an archetype + email (from the free flow),
+     the button tags their existing ConvertKit subscriber with
+     premium_interest instead of re-asking for anything. Visitors who
+     haven't taken the quiz yet just get routed there first. */
+  var upsellCtaBtn = document.getElementById('upsellCta');
+  var upsellConfirm = document.getElementById('upsellConfirm');
+
+  function refreshUpsellCta() {
+    if (!upsellCtaBtn) return;
+    upsellCtaBtn.textContent = (state.email && state.resultArch)
+      ? 'Count Me In — $47 Launch Price →'
+      : 'Take the Free Quiz First →';
+  }
+
+  if (upsellCtaBtn) {
+    upsellCtaBtn.addEventListener('click', function () {
+      if (state.email && state.resultArch) {
+        var archetypeLabel = ARCHETYPES[state.resultArch].name.replace('The ', '');
+        trackEvent('premium_interest_clicked', { archetype: state.resultArch });
+        subscribeToConvertKit(state.email, archetypeLabel, { premium_interest: 'yes' });
+        upsellCtaBtn.hidden = true;
+        upsellConfirm.hidden = false;
+      } else {
+        trackEvent('upsell_cta_clicked', { archetype: state.resultArch });
+        document.getElementById('quiz').scrollIntoView({ behavior: 'smooth' });
+      }
     });
   }
+
+  refreshUpsellCta();
 
   /* ==========================================================================
      Resume in-progress/completed sessions on reload
      ========================================================================== */
-  if (state.resultArch && state.answers.length === QUESTIONS.length) {
+  if (state.email && state.resultArch) {
+    renderResult(state.resultArch);
+    unlockLedger(state.resultArch);
+  } else if (state.resultArch && state.answers.length === QUESTIONS.length) {
     renderResult(state.resultArch);
   } else if (state.answers.length > 0) {
     renderQuestion();
