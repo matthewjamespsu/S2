@@ -26,7 +26,7 @@
      ========================================================================== */
   var CONVERTKIT_CONFIG = {
     formId: '9889675',
-    apiKey: 'YOUR_CONVERTKIT_PUBLIC_API_KEY'
+    apiKey: 'TnIsvopsbWfXbjj1Pm2MZQ'
   };
 
   function isConvertKitConfigured() {
