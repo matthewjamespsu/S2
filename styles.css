@@ -489,8 +489,30 @@ a{ color: inherit; text-decoration: none; }
   text-align: center;
   font-size: 0.84rem;
   color: var(--ink-soft);
-  margin-bottom: 48px;
+  margin-bottom: 32px;
 }
+
+.na-section{
+  max-width: 780px;
+  margin: 0 auto 48px;
+  background: var(--paper-2);
+  border: 1px dashed var(--line);
+  border-radius: var(--radius-md);
+  padding: 4px 20px;
+}
+.na-section summary{
+  cursor: pointer;
+  padding: 14px 0;
+  font-size: 0.9rem;
+  font-weight: 700;
+  color: var(--ink-soft);
+  list-style: none;
+}
+.na-section summary::-webkit-details-marker{ display: none; }
+.na-section summary::before{ content: "▸ "; }
+.na-section[open] summary::before{ content: "▾ "; }
+.na-section .board-list{ padding-bottom: 16px; }
+.na-section .board-item{ background: #fff; opacity: 0.75; }
 
 .script-block{
   max-width: 680px;

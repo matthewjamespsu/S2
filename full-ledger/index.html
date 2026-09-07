@@ -100,6 +100,10 @@
           </div>
         </div>
         <p class="board-hint no-print">Use the dropdown on any task to move it — edit freely, this is yours now.</p>
+        <details class="na-section no-print">
+          <summary id="naSummary">Not applicable to us (0)</summary>
+          <div class="board-list" id="colNA"></div>
+        </details>
 
         <div class="script-block">
           <h3 class="script-heading">Your conversation script</h3>
@@ -418,6 +422,14 @@
     items.forEach(function (label) { container.appendChild(buildBoardItem(label, column)); });
   }
 
+  var BOARD_COLUMN_IDS = { keep: 'colKeep', delegate: 'colDelegate', letGo: 'colLetGo', na: 'colNA' };
+
+  function updateNaSummary() {
+    var summary = document.getElementById('naSummary');
+    var count = document.getElementById('colNA').children.length;
+    summary.textContent = 'Not applicable to us (' + count + ')';
+  }
+
   function buildBoardItem(label, column) {
     var row = document.createElement('div');
     row.className = 'board-item';
@@ -427,7 +439,7 @@
 
     var select = document.createElement('select');
     select.setAttribute('aria-label', 'Move "' + label + '"');
-    [['keep', 'Keep'], ['delegate', 'Delegate'], ['letGo', 'Let Go']].forEach(function (pair) {
+    [['keep', 'Keep'], ['delegate', 'Delegate'], ['letGo', 'Let Go'], ['na', 'N/A']].forEach(function (pair) {
       var o = document.createElement('option');
       o.value = pair[0];
       o.textContent = pair[1];
@@ -436,8 +448,8 @@
     });
     select.addEventListener('change', function () {
       row.remove();
-      var targetId = { keep: 'colKeep', delegate: 'colDelegate', letGo: 'colLetGo' }[select.value];
-      document.getElementById(targetId).appendChild(buildBoardItem(label, select.value));
+      document.getElementById(BOARD_COLUMN_IDS[select.value]).appendChild(buildBoardItem(label, select.value));
+      updateNaSummary();
     });
     row.appendChild(select);
     return row;
@@ -468,6 +480,8 @@
     buildBoardColumn('colKeep', arch.tasks.keep, 'keep');
     buildBoardColumn('colDelegate', arch.tasks.delegate, 'delegate');
     buildBoardColumn('colLetGo', arch.tasks.letGo, 'letGo');
+    buildBoardColumn('colNA', [], 'na');
+    updateNaSummary();
 
     activeTab = 'defensive';
     Array.prototype.forEach.call(document.querySelectorAll('.script-tab'), function (t) {

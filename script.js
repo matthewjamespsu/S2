@@ -546,6 +546,15 @@
     });
   }
 
+  var BOARD_COLUMN_IDS = { keep: 'colKeep', delegate: 'colDelegate', letGo: 'colLetGo', na: 'colNA' };
+
+  function updateNaSummary() {
+    var summary = document.getElementById('naSummary');
+    if (!summary) return;
+    var count = document.getElementById('colNA').children.length;
+    summary.textContent = 'Not applicable to us (' + count + ')';
+  }
+
   function buildBoardItem(label, column) {
     var row = document.createElement('div');
     row.className = 'board-item';
@@ -556,7 +565,7 @@
 
     var select = document.createElement('select');
     select.setAttribute('aria-label', 'Move "' + label + '"');
-    [['keep', 'Keep'], ['delegate', 'Delegate'], ['letGo', 'Let Go']].forEach(function (pair) {
+    [['keep', 'Keep'], ['delegate', 'Delegate'], ['letGo', 'Let Go'], ['na', 'N/A']].forEach(function (pair) {
       var o = document.createElement('option');
       o.value = pair[0];
       o.textContent = pair[1];
@@ -565,8 +574,8 @@
     });
     select.addEventListener('change', function () {
       row.remove();
-      var targetId = { keep: 'colKeep', delegate: 'colDelegate', letGo: 'colLetGo' }[select.value];
-      document.getElementById(targetId).appendChild(buildBoardItem(label, select.value));
+      document.getElementById(BOARD_COLUMN_IDS[select.value]).appendChild(buildBoardItem(label, select.value));
+      updateNaSummary();
       trackEvent('task_moved', { task: label, to: select.value });
     });
     row.appendChild(select);
@@ -595,6 +604,8 @@
     buildBoardColumn('colKeep', arch.tasks.keep, 'keep');
     buildBoardColumn('colDelegate', arch.tasks.delegate, 'delegate');
     buildBoardColumn('colLetGo', arch.tasks.letGo, 'letGo');
+    buildBoardColumn('colNA', [], 'na');
+    updateNaSummary();
 
     activeScriptTab = 'self';
     Array.prototype.forEach.call(document.querySelectorAll('.script-tab'), function (t) {
