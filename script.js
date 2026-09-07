@@ -28,6 +28,10 @@
     newSibling: {
       label: 'New Sibling',
       costLeadIn: 'Since your newest arrived, '
+    },
+    firstTimeParent: {
+      label: 'First-Time Parents',
+      costLeadIn: 'Since your baby arrived, '
     }
   };
   var CURRENT_SCENARIO = SCENARIOS[window.HHL_SCENARIO] ? window.HHL_SCENARIO : 'returnToWork';

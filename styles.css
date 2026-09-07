@@ -294,7 +294,7 @@ a{ color: inherit; text-decoration: none; }
 .scenario-grid{
   margin-top: 48px;
   display: grid;
-  grid-template-columns: repeat(2, 1fr);
+  grid-template-columns: repeat(3, 1fr);
   gap: 20px;
 }
 .scenario-card{
@@ -320,6 +320,10 @@ a{ color: inherit; text-decoration: none; }
   color: var(--ink-soft);
 }
 .scenario-footnote a{ color: var(--accent); font-weight: 700; }
+
+@media (max-width: 900px){
+  .scenario-grid{ grid-template-columns: repeat(2, 1fr); }
+}
 
 @media (max-width: 640px){
   .scenario-grid{ grid-template-columns: 1fr; }
