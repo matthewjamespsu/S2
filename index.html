@@ -19,7 +19,7 @@
 <header class="nav" id="nav">
   <div class="nav-inner">
     <a href="#top" class="wordmark">The Household Ledger</a>
-    <a href="#start" class="nav-cta">Take the Quiz</a>
+    <a href="#quiz" class="nav-cta">Take the Quiz</a>
   </div>
 </header>
 
@@ -39,7 +39,7 @@
         and get the exact script to hand off the parts that are wearing you out.
       </p>
       <div class="hero-actions">
-        <a href="#start" class="btn btn-primary btn-glow">
+        <a href="#quiz" class="btn btn-primary btn-glow">
           Take the 3-Minute Quiz
           <svg width="18" height="18" viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M5 12h14M13 6l6 6-6 6" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
         </a>
@@ -149,62 +149,113 @@
     </div>
   </section>
 
-  <!-- ============ MINI DEMO ============ -->
-  <section class="section demo">
-    <div class="container demo-inner">
-      <h2 class="section-title">Try a real question from the quiz</h2>
-      <p class="section-sub">This is question 1 of 8. Pick the one that sounds most like your house.</p>
+  <!-- ============ QUIZ APP ============ -->
+  <section class="section start" id="quiz">
+    <div class="start-bg" aria-hidden="true"></div>
+    <div class="container start-inner">
+      <div id="quizApp">
 
-      <div class="demo-card" id="demoCard">
-        <p class="demo-question">The pediatrician calls with a reschedule. What actually happens?</p>
-        <div class="demo-options" id="demoOptions">
-          <button class="demo-opt" data-arch="Manager">I already knew it might happen and had a backup slot in mind.</button>
-          <button class="demo-opt" data-arch="Ghost">I handle it without my partner ever knowing it happened.</button>
-          <button class="demo-opt" data-arch="Martyr">I could ask my partner — but I know I'll just redo it after.</button>
-          <button class="demo-opt" data-arch="Default">Whoever's phone rings deals with it. Usually mine.</button>
+        <!-- Screen 1: intro -->
+        <div class="quiz-screen" id="screenIntro">
+          <p class="eyebrow eyebrow-light">Start your diagnostic</p>
+          <h2 class="start-title">8 quick questions.<br>One honest answer.</h2>
+          <p class="start-sub">Pick whichever sounds most like your house. There's no wrong answer — just the true one.</p>
+          <button type="button" class="btn btn-primary btn-glow" id="startQuizBtn">
+            Start the Quiz
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M5 12h14M13 6l6 6-6 6" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+          </button>
+          <p class="hero-microcopy hero-microcopy-light">Free · Takes 3 minutes · No account needed</p>
         </div>
-        <div class="demo-result" id="demoResult" hidden>
-          <p id="demoResultText"></p>
-          <a href="#start" class="btn btn-primary">Get My Full Result <span aria-hidden="true">→</span></a>
+
+        <!-- Screen 2: question -->
+        <div class="quiz-screen" id="screenQuestion" hidden>
+          <div class="quiz-progress" role="progressbar" aria-valuemin="0" aria-valuemax="100" id="quizProgressWrap">
+            <div class="quiz-progress-bar" id="progressBar"></div>
+          </div>
+          <p class="quiz-count" id="quizCount">Question 1 of 8</p>
+          <h3 class="quiz-question" id="quizQuestionText"></h3>
+          <div class="quiz-options" id="quizOptions"></div>
+          <button type="button" class="quiz-back" id="quizBackBtn" hidden>← Back</button>
         </div>
+
+        <!-- Screen 3: free result reveal + email gate -->
+        <div class="quiz-screen" id="screenResult" hidden>
+          <p class="eyebrow eyebrow-light">Your result</p>
+          <div class="result-badge" id="resultBadge" aria-hidden="true"></div>
+          <h2 class="start-title" id="resultTitle"></h2>
+          <p class="start-sub" id="resultTeaser"></p>
+
+          <form class="email-form" id="emailForm" novalidate>
+            <div class="email-field">
+              <input type="email" id="emailInput" name="email" placeholder="you@email.com" autocomplete="email" inputmode="email" required aria-label="Email address">
+              <button type="submit" class="btn btn-primary" id="emailSubmit">
+                <span class="btn-label">Unlock My Ledger</span>
+              </button>
+            </div>
+            <p class="email-error" id="emailError" hidden>Enter a valid email so we know where to send your Ledger.</p>
+            <p class="email-fineprint">No spam. Unsubscribe anytime. Your full Ledger unlocks instantly below.</p>
+          </form>
+        </div>
+
       </div>
     </div>
   </section>
 
-  <!-- ============ EMAIL CAPTURE ============ -->
-  <section class="section start" id="start">
-    <div class="start-bg" aria-hidden="true"></div>
-    <div class="container start-inner">
-      <p class="eyebrow eyebrow-light">Start your diagnostic</p>
-      <h2 class="start-title">Find out which role you're stuck in —<br>before it burns you out completely.</h2>
-      <p class="start-sub">Enter your email to unlock the 3-minute quiz. Your personalized Ledger and script land straight in your inbox.</p>
-
-      <form class="email-form" id="emailForm" novalidate>
-        <div class="email-field">
-          <input type="email" id="emailInput" name="email" placeholder="you@email.com" autocomplete="email" inputmode="email" required aria-label="Email address">
-          <button type="submit" class="btn btn-primary" id="emailSubmit">
-            <span class="btn-label">Start the Quiz</span>
-          </button>
+  <!-- ============ LEDGER (personalized deliverable) ============ -->
+  <section class="section ledger" id="ledger" hidden>
+    <div class="container">
+      <div id="ledgerPrintArea">
+        <div class="ledger-header">
+          <span class="eyebrow" id="ledgerEyebrow">Your Household Ledger</span>
+          <h2 class="section-title" id="ledgerTitle"></h2>
+          <p class="ledger-cost" id="ledgerCost"></p>
         </div>
-        <p class="email-error" id="emailError" hidden>Enter a valid email so we know where to send your Ledger.</p>
-        <p class="email-fineprint">No spam. Unsubscribe anytime. Your Ledger arrives in under 60 seconds.</p>
-      </form>
 
-      <div class="email-success" id="emailSuccess" hidden>
-        <span class="success-check">✓</span>
-        <h3>You're in.</h3>
-        <p>Check <strong id="successEmail">your inbox</strong> — your 3-minute quiz link just landed. Take it now while it's top of mind.</p>
+        <div class="board" id="board">
+          <div class="board-col" data-col="keep">
+            <h3>Keep</h3>
+            <div class="board-list" id="colKeep"></div>
+          </div>
+          <div class="board-col" data-col="delegate">
+            <h3>Delegate</h3>
+            <div class="board-list" id="colDelegate"></div>
+          </div>
+          <div class="board-col" data-col="letGo">
+            <h3>Let Go</h3>
+            <div class="board-list" id="colLetGo"></div>
+          </div>
+        </div>
+        <p class="board-hint no-print">Not quite right? Use the dropdown on any task to move it — this is your starting point, not a final answer.</p>
+
+        <div class="script-block">
+          <h3 class="script-heading">Your conversation script</h3>
+          <div class="script-tabs" role="tablist">
+            <button type="button" class="script-tab active" data-tab="self" role="tab" aria-selected="true">Script for you</button>
+            <button type="button" class="script-tab" data-tab="partner" role="tab" aria-selected="false">Send to your partner</button>
+          </div>
+          <p class="script-text" id="scriptText"></p>
+          <button type="button" class="btn btn-outline btn-sm" id="copyScriptBtn">Copy Script</button>
+        </div>
+
+        <div class="ledger-actions no-print">
+          <button type="button" class="btn btn-outline" id="downloadPdfBtn">Download as PDF</button>
+        </div>
+      </div>
+
+      <div class="ledger-upsell no-print">
+        <p id="ledgerUpsellLine">Ready for the full system?</p>
+        <a href="#upsell" class="btn btn-primary">See the Full Household Ledger System →</a>
       </div>
     </div>
   </section>
 
   <!-- ============ UPSELL ============ -->
-  <section class="section upsell">
+  <section class="section upsell" id="upsell">
     <div class="container upsell-inner">
       <span class="upsell-kicker">After your free result</span>
       <h2 class="upsell-title">Want the whole system, not just the diagnosis?</h2>
       <p class="upsell-sub">The Full Household Ledger System gives you all 150 tasks sorted for your household, a 90-day hand-off plan, and a partner-facing version built to actually start the conversation — not the fight.</p>
-      <a href="#start" class="btn btn-outline">Take the Free Quiz First →</a>
+      <a href="#quiz" class="btn btn-outline">Take the Free Quiz First →</a>
     </div>
   </section>
 
@@ -220,7 +271,7 @@
 
 <!-- ============ STICKY MOBILE CTA ============ -->
 <div class="sticky-cta" id="stickyCta">
-  <a href="#start" class="btn btn-primary btn-block">Take the 3-Minute Quiz →</a>
+  <a href="#quiz" class="btn btn-primary btn-block">Take the 3-Minute Quiz →</a>
 </div>
 
 <script src="script.js"></script>
