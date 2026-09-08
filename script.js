@@ -128,7 +128,8 @@
         { arch: 'manager', text: "I already knew it might happen and had a backup slot in mind." },
         { arch: 'ghost', text: "I handle it without my partner ever knowing it happened." },
         { arch: 'martyr', text: "I could ask my partner to handle it, but I know I'll just redo it after." },
-        { arch: 'default', text: "Whoever's phone rings deals with it — usually mine." }
+        { arch: 'default', text: "Whoever's phone rings deals with it — usually mine." },
+        { arch: 'shared', text: "Either of us handles it — genuinely whoever's free." }
       ]
     },
     {
@@ -137,7 +138,8 @@
         { arch: 'manager', text: "Me — I've already got a replacement pair bookmarked." },
         { arch: 'ghost', text: "Me — and I just quietly order them, no discussion needed." },
         { arch: 'martyr', text: "Me — I'd rather pick them myself than risk the wrong ones." },
-        { arch: 'default', text: "Me, by default — nobody else tracks sizes." }
+        { arch: 'default', text: "Me, by default — nobody else tracks sizes." },
+        { arch: 'shared', text: "Either of us — we both keep an eye on sizes." }
       ]
     },
     {
@@ -146,7 +148,8 @@
         { arch: 'manager', text: "I send reminders and a checklist so it doesn't slip." },
         { arch: 'ghost', text: "I end up doing it quietly so the date doesn't get missed." },
         { arch: 'martyr', text: "I \"let\" them try, then redo half of it myself." },
-        { arch: 'default', text: "It doesn't happen until I step in at the last minute." }
+        { arch: 'default', text: "It doesn't happen until I step in at the last minute." },
+        { arch: 'shared', text: "They actually run with it, start to finish." }
       ]
     },
     {
@@ -155,7 +158,8 @@
         { arch: 'manager', text: "I've already planned the week and assigned who's cooking what." },
         { arch: 'ghost', text: "I just make it happen — no one else clocks the planning involved." },
         { arch: 'martyr', text: "I could ask for help, but it's faster if I just do it myself." },
-        { arch: 'default', text: "Whoever gets hungry first ends up figuring it out — usually me." }
+        { arch: 'default', text: "Whoever gets hungry first ends up figuring it out — usually me." },
+        { arch: 'shared', text: "We trade off nights and it actually holds up." }
       ]
     },
     {
@@ -164,7 +168,8 @@
         { arch: 'manager', text: "I flag it immediately and follow up if it's not done." },
         { arch: 'ghost', text: "I fill it out and turn it in without mentioning it." },
         { arch: 'martyr', text: "I could hand it off, but I don't trust it'll get done right." },
-        { arch: 'default', text: "It sits until I notice it buried in a backpack." }
+        { arch: 'default', text: "It sits until I notice it buried in a backpack." },
+        { arch: 'shared', text: "Either of us catches it — we both check backpacks." }
       ]
     },
     {
@@ -173,7 +178,8 @@
         { arch: 'manager', text: "I've got it listed, budgeted, and delegated to someone to order." },
         { arch: 'ghost', text: "I just buy and wrap it — nobody else knows a gift was needed." },
         { arch: 'martyr', text: "I let my partner pick once, didn't love it, now I just handle it." },
-        { arch: 'default', text: "It becomes \"our\" gift the moment I remember it's needed." }
+        { arch: 'default', text: "It becomes \"our\" gift the moment I remember it's needed." },
+        { arch: 'shared', text: "We pick it out together, no single owner." }
       ]
     },
     {
@@ -182,7 +188,8 @@
         { arch: 'manager', text: "We have a rotation and I know whose night it is." },
         { arch: 'ghost', text: "I get up so my partner can keep sleeping — they don't always know." },
         { arch: 'martyr', text: "My partner offers, but I go anyway since I know the routine better." },
-        { arch: 'default', text: "Whoever's already half-awake goes — that's usually me." }
+        { arch: 'default', text: "Whoever's already half-awake goes — that's usually me." },
+        { arch: 'shared', text: "We genuinely alternate and it's kept even." }
       ]
     },
     {
@@ -191,7 +198,8 @@
         { arch: 'manager', text: "I run through the checklist and confirm everything's in." },
         { arch: 'ghost', text: "I pack it after everyone's asleep; no one sees it happen." },
         { arch: 'martyr', text: "I could ask for help, but I know exactly how it needs to be packed." },
-        { arch: 'default', text: "It gets packed whenever someone realizes it hasn't been — usually me." }
+        { arch: 'default', text: "It gets packed whenever someone realizes it hasn't been — usually me." },
+        { arch: 'shared', text: "We trade off and neither of us defaults to it." }
       ]
     }
   ];
@@ -452,11 +460,17 @@
     manager: { proactive: 1, visible: 1, control: -1 },
     ghost: { proactive: 1, visible: -1, control: 0 },
     martyr: { proactive: 1, visible: 1, control: 1 },
-    default: { proactive: -1, visible: 0, control: 0 }
+    default: { proactive: -1, visible: 0, control: 0 },
+    // "We already share this" — a real answer option, not a dodge. It
+    // carries no directional weight: picking it just removes that
+    // question's signal from the tally instead of forcing an ownership
+    // stance that isn't true, so tasks a partner already shares don't
+    // skew the result toward any archetype.
+    shared: { proactive: 0, visible: 0, control: 0 }
   };
 
   function tally() {
-    var counts = { manager: 0, ghost: 0, martyr: 0, default: 0 };
+    var counts = { manager: 0, ghost: 0, martyr: 0, default: 0, shared: 0 };
     var traits = { proactive: 0, visible: 0, control: 0 };
     state.answers.forEach(function (a) {
       if (counts[a] === undefined) return;
