@@ -42,7 +42,7 @@
      Setup (one-time, ~5 min):
        1. Sign up at https://app.convertkit.com (free plan covers 10k subs).
        2. Grow → Landing Pages & Forms → New Form → create one (any type,
-          e.g. "Inline") named something like "Household Ledger Quiz".
+          e.g. "Inline") named something like "Partner Equation Quiz".
           Open it and copy the numeric Form ID shown in its settings URL
           (app.convertkit.com/forms/designers/<FORM_ID>/edit).
        3. Settings → Advanced → API → copy the "API Key" (the public key —
@@ -71,7 +71,7 @@
 
   function subscribeToConvertKit(email, archetypeLabel, extraFields) {
     if (!isConvertKitConfigured()) {
-      console.warn('[Household Ledger] ConvertKit not configured yet — skipping subscribe. See CONVERTKIT_CONFIG at the top of script.js.');
+      console.warn('[Partner Equation] ConvertKit not configured yet — skipping subscribe. See CONVERTKIT_CONFIG at the top of script.js.');
       return;
     }
     // ConvertKit's subscribe endpoint upserts by email, so calling it again
