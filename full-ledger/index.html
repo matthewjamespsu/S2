@@ -43,8 +43,24 @@
     </div>
   </section>
 
+  <!-- ============ ACCESS GATE ============ -->
+  <section class="section" id="accessGate">
+    <div class="container" style="max-width:480px;">
+      <h2 class="section-title">Enter your access code</h2>
+      <p class="section-sub">This is the paid Full Household Ledger System. Enter the access code you received to continue.</p>
+      <form id="gateForm" style="display:flex; flex-direction:column; gap:12px; margin-top:24px;">
+        <input type="text" id="gateInput" placeholder="Access code" autocomplete="off"
+          style="padding:14px 16px; border-radius:10px; border:1px solid #ddd; font-size:1rem;">
+        <button type="submit" class="btn btn-primary">Unlock</button>
+        <p id="gateError" class="section-sub" style="color:#b23b3b; display:none;">
+          That code isn't right. Double-check and try again.
+        </p>
+      </form>
+    </div>
+  </section>
+
   <!-- ============ PICKER ============ -->
-  <section class="section no-print">
+  <section class="section no-print" id="pickerSection" hidden>
     <div class="container">
       <h2 class="section-title">Which archetype are you?</h2>
       <p class="section-sub">Select the result from your free quiz to unlock your full content.</p>
@@ -168,6 +184,47 @@
 <script>
 (function () {
   'use strict';
+
+  // Stopgap access gate — not a real auth boundary (code is visible in page source).
+  // Good enough to keep casual/accidental visitors out pre-Stripe. Replace this whole
+  // mechanism once purchases issue real per-customer access.
+  var ACCESS_CODE = 'ledger2026';
+  var ACCESS_KEY = 'hhl_full_ledger_access';
+
+  (function initGate() {
+    var params = new URLSearchParams(window.location.search);
+    var urlCode = params.get('access');
+    var stored = null;
+    try { stored = localStorage.getItem(ACCESS_KEY); } catch (e) {}
+
+    function unlock() {
+      document.getElementById('accessGate').hidden = true;
+      document.getElementById('pickerSection').hidden = false;
+    }
+
+    if (stored === ACCESS_CODE || urlCode === ACCESS_CODE) {
+      try { localStorage.setItem(ACCESS_KEY, ACCESS_CODE); } catch (e) {}
+      if (urlCode) {
+        params.delete('access');
+        var rest = params.toString();
+        window.history.replaceState({}, '', window.location.pathname + (rest ? '?' + rest : '') + window.location.hash);
+      }
+      unlock();
+      return;
+    }
+
+    var form = document.getElementById('gateForm');
+    form.addEventListener('submit', function (e) {
+      e.preventDefault();
+      var input = document.getElementById('gateInput');
+      if (input.value.trim() === ACCESS_CODE) {
+        try { localStorage.setItem(ACCESS_KEY, ACCESS_CODE); } catch (err) {}
+        unlock();
+      } else {
+        document.getElementById('gateError').style.display = 'block';
+      }
+    });
+  })();
 
   var FULL = {
     manager: {
